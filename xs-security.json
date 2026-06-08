@@ -1,0 +1,17 @@
+{
+  "xsappname": "mcp-s4-bp2",
+  "tenant-mode": "dedicated",
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.User",
+      "description": "User access"
+    }
+  ],
+  "role-templates": [
+    {
+      "name": "User",
+      "description": "Basic user role",
+      "scope-references": ["$XSAPPNAME.User"]
+    }
+  ]
+}

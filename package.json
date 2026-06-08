@@ -1,0 +1,25 @@
+{
+  "name": "simple-s4-mcp2",
+  "version": "1.0.0",
+  "description": "MCP Server for SAP S/4HANA Business Partner with Principal Propagation",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node src/server.ts",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@sap-cloud-sdk/http-client": "^4.7.0",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.9.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
+}

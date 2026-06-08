@@ -1,0 +1,87 @@
+_schema-version: "3.3"
+ID: mcp-s4-bp2
+version: 1.0.0
+description: MCP server for SAP S/4HANA Business Partner with Principal Propagation
+
+modules:
+
+  # -------------------------
+  # App Router (PUBLIC ENTRY)
+  # -------------------------
+  - name: mcp-approuter
+    type: approuter.nodejs
+    path: approuter
+    parameters:
+      memory: 256M
+      disk-quota: 256M
+      routes:
+        - route: mcp-s4-bp2-${space}.${default-domain}
+    requires:
+      - name: mcp-xsuaa
+      - name: mcp-server-api
+    properties:
+      destinations: >
+        [
+          {
+            "name": "mcp-backend",
+            "url": "https://mcp-server-dev.cfapps.ap10.hana.ondemand.com",
+            "forwardAuthToken": true
+          }
+        ]
+
+  # -------------------------
+  # MCP Server (BUSINESS LOGIC)
+  # -------------------------
+  - name: mcp-server
+    type: nodejs
+    path: .
+    parameters:
+      memory: 512M
+      disk-quota: 512M
+      routes:
+        - route: mcp-server-${space}.${default-domain}
+    requires:
+      - name: mcp-xsuaa
+      - name: mcp-destination
+      - name: mcp-connectivity
+    provides:
+      - name: mcp-server-api
+        properties:
+          url: https://${default-host}
+
+resources:
+
+  # -------------------------
+  # XSUAA (AUTH)
+  # -------------------------
+  - name: mcp-xsuaa
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+
+  # -------------------------
+  # DESTINATION (PRINCIPAL PROPAGATION)
+  # -------------------------
+  - name: mcp-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
+
+  # -------------------------
+  # CONNECTIVITY (CLOUD CONNECTOR)
+  # -------------------------
+  - name: mcp-connectivity
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: connectivity
+      service-plan: lite
+
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci
+        - npm run build
