@@ -3,25 +3,25 @@
   "routes": [
     {
       "source": "^/mcp(.*)",
-      "destination": "mcp-backend",
+      "destination": "s4-pp-mcp-backend",
       "authenticationType": "xsuaa",
       "csrfProtection": false
     },
     {
       "source": "^/health$",
-      "destination": "mcp-backend",
+      "destination": "s4-pp-mcp-backend",
       "authenticationType": "none"
     },
     {
       "source": "^/whoami$",
       "target": "/whoami",
-      "destination": "mcp-backend",
+      "destination": "s4-pp-mcp-backend",
       "authenticationType": "xsuaa"
     },
     {
       "source": "^(.*)$",
       "target": "$1",
-      "destination": "mcp-backend",
+      "destination": "s4-pp-mcp-backend",
       "authenticationType": "xsuaa",
       "csrfProtection": false
     }

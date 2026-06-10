@@ -1,5 +1,5 @@
 {
-  "xsappname": "mcp-s4-bp2",
+  "xsappname": "s4-pp-mcp-app",
   "tenant-mode": "dedicated",
   "scopes": [
     {

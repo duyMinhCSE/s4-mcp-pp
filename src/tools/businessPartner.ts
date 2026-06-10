@@ -6,11 +6,12 @@ export async function getBusinessPartner(supplierId: string, jwt?: string) {
   return {
     supplierId,
     businessPartner: {
-      id: data.BusinessPartner,
-      type: data.BusinessPartnerType,
-      category: data.BusinessPartnerCategory,
-      createdOn: data.CreationDate,
-      changedOn: data.LastChangeDateTime
+      id: data.d.BusinessPartner,
+      type: data.d.BusinessPartnerType,
+      group: data.d.BusinessPartnerGrouping,
+      name: data.d.BusinessPartnerFullName,
+      createdBy: data.d.CreatedByUser,
+      personNumber: data.d.PersonNumber
     }
   };
 }

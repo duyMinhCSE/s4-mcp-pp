@@ -1,5 +1,5 @@
 {
-  "name": "s4-bp-mcp-approuter",
+  "name": "s4-pp-mcp-approuter",
   "version": "1.0.0",
   "description": "App Router for S4 Business Partner MCP server",
   "scripts": {

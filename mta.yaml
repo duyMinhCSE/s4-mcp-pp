@@ -1,5 +1,5 @@
 _schema-version: "3.3"
-ID: mcp-s4-bp2
+ID: s4-pp-mcp-app
 version: 1.0.0
 description: MCP server for SAP S/4HANA Business Partner with Principal Propagation
 
@@ -8,23 +8,23 @@ modules:
   # -------------------------
   # App Router (PUBLIC ENTRY)
   # -------------------------
-  - name: mcp-approuter
+  - name: s4-pp-mcp-approuter
     type: approuter.nodejs
     path: approuter
     parameters:
       memory: 256M
       disk-quota: 256M
       routes:
-        - route: mcp-s4-bp2-${space}.${default-domain}
+        - route: s4-pp-mcp-${space}.${default-domain}
     requires:
-      - name: mcp-xsuaa
-      - name: mcp-server-api
+      - name: s4-pp-mcp-xsuaa
+      - name: s4-pp-mcp-server-api
     properties:
       destinations: >
         [
           {
-            "name": "mcp-backend",
-            "url": "https://mcp-server-dev.cfapps.ap10.hana.ondemand.com",
+            "name": "s4-pp-mcp-backend",
+            "url": "https://s4-pp-mcp-server-dev.cfapps.ap10.hana.ondemand.com",
             "forwardAuthToken": true
           }
         ]
@@ -32,20 +32,20 @@ modules:
   # -------------------------
   # MCP Server (BUSINESS LOGIC)
   # -------------------------
-  - name: mcp-server
+  - name: s4-pp-mcp-server
     type: nodejs
     path: .
     parameters:
       memory: 512M
       disk-quota: 512M
       routes:
-        - route: mcp-server-${space}.${default-domain}
+        - route: s4-pp-mcp-server-${space}.${default-domain}
     requires:
-      - name: mcp-xsuaa
-      - name: mcp-destination
-      - name: mcp-connectivity
+      - name: s4-pp-mcp-xsuaa
+      - name: s4-pp-mcp-destination
+      - name: s4-pp-mcp-connectivity
     provides:
-      - name: mcp-server-api
+      - name: s4-pp-mcp-server-api
         properties:
           url: https://${default-host}
 
@@ -54,7 +54,7 @@ resources:
   # -------------------------
   # XSUAA (AUTH)
   # -------------------------
-  - name: mcp-xsuaa
+  - name: s4-pp-mcp-xsuaa
     type: org.cloudfoundry.managed-service
     parameters:
       service: xsuaa
@@ -64,7 +64,7 @@ resources:
   # -------------------------
   # DESTINATION (PRINCIPAL PROPAGATION)
   # -------------------------
-  - name: mcp-destination
+  - name: s4-pp-mcp-destination
     type: org.cloudfoundry.managed-service
     parameters:
       service: destination
@@ -73,7 +73,7 @@ resources:
   # -------------------------
   # CONNECTIVITY (CLOUD CONNECTOR)
   # -------------------------
-  - name: mcp-connectivity
+  - name: s4-pp-mcp-connectivity
     type: org.cloudfoundry.managed-service
     parameters:
       service: connectivity
