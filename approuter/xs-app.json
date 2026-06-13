@@ -10,7 +10,7 @@
     {
       "source": "^/mcp(.*)",
       "destination": "s4-pp-mcp-backend",
-      "authenticationType": "xsuaa",
+      "authenticationType": "none",
       "csrfProtection": false
     },
     {
