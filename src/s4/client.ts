@@ -7,13 +7,9 @@ export async function callS4(supplierId: string, jwt?: string, sessionId?: strin
     throw new Error("Missing JWT for principal propagation. Provide a valid sessionId or re-authenticate.");
   }
 
-  //const jwt = token;
-
-  console.error('executeHttpRequest started', supplierId)
-
   const response = await executeHttpRequest(
     {
-      destinationName: "Robin_S4HANA_HE4_SCC_ODATA",
+      destinationName: "S4PPRI4",
       jwt: token
     },
     {
