@@ -1,6 +1,6 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { listLeave, getLeave, createLeave, updateLeave, deleteLeave } from "../s4/leaveClient";
+import { listLeave, getLeave, createLeave, updateLeave, deleteLeave, getEmployeeId } from "../s4/leaveClient";
 
 const SESSION_DESC = "Session ID from /session/link. Required for principal propagation to S/4.";
 
@@ -71,17 +71,17 @@ export function registerLeaveTools(server: McpServer): void {
   server.registerTool(
     "leave_get_leave_request",
     {
-      description: "Get a leave request by composite key (EmployeeID, RequestID, ChangeStateID, LeaveKey).",
+      description: "Get a leave request by key (RequestID, ChangeStateID, LeaveKey). EmployeeID is determined automatically from the propagated principal.",
       inputSchema: {
-        EmployeeID: z.string().describe("Employee personnel number"),
         RequestID: z.string().describe("Leave request ID"),
         ChangeStateID: z.string().describe("Change state ID (integer value as string, e.g. '1')"),
         LeaveKey: z.string().describe("Leave key"),
         sessionId: z.string().optional().describe(SESSION_DESC),
       },
     },
-    async ({ EmployeeID, RequestID, ChangeStateID, LeaveKey, sessionId }) => {
+    async ({ RequestID, ChangeStateID, LeaveKey, sessionId }) => {
       if (!sessionId) return authRequired();
+      const EmployeeID = await getEmployeeId(undefined, sessionId);
       const data = await getLeave("LeaveRequestSet", [
         { name: "EmployeeID", type: "string", value: EmployeeID },
         { name: "RequestID", type: "string", value: RequestID },
@@ -95,17 +95,19 @@ export function registerLeaveTools(server: McpServer): void {
   server.registerTool(
     "leave_create_leave_request",
     {
-      description: "Create a new leave/absence request. CSRF token is fetched automatically.",
+      description: "Create a new leave/absence request. EmployeeID is determined automatically from the propagated principal and is injected into the body if omitted. CSRF token is fetched automatically.",
       inputSchema: {
         body: z.string().describe(
-          'JSON string with leave request fields, e.g. {"EmployeeID":"00001","AbsenceTypeCode":"0100","StartDate":"/Date(1700000000000)/","EndDate":"/Date(1700000000000)/"}'
+          'JSON string with leave request fields, e.g. {"AbsenceTypeCode":"0100","StartDate":"/Date(1700000000000)/","EndDate":"/Date(1700000000000)/"}. EmployeeID is optional — it is filled in automatically from the principal when not provided.'
         ),
         sessionId: z.string().optional().describe(SESSION_DESC),
       },
     },
     async ({ body, sessionId }) => {
       if (!sessionId) return authRequired();
-      const data = await createLeave("LeaveRequestSet", JSON.parse(body) as object, undefined, sessionId);
+      const parsed = JSON.parse(body) as Record<string, unknown>;
+      if (parsed.EmployeeID == null) parsed.EmployeeID = await getEmployeeId(undefined, sessionId);
+      const data = await createLeave("LeaveRequestSet", parsed, undefined, sessionId);
       return ok(data);
     }
   );
@@ -113,9 +115,8 @@ export function registerLeaveTools(server: McpServer): void {
   server.registerTool(
     "leave_update_leave_request",
     {
-      description: "Update an existing leave request by composite key. CSRF token is fetched automatically.",
+      description: "Update an existing leave request by key (RequestID, ChangeStateID, LeaveKey). EmployeeID is determined automatically from the propagated principal. CSRF token is fetched automatically.",
       inputSchema: {
-        EmployeeID: z.string().describe("Employee personnel number"),
         RequestID: z.string().describe("Leave request ID"),
         ChangeStateID: z.string().describe("Change state ID (integer value as string)"),
         LeaveKey: z.string().describe("Leave key"),
@@ -123,8 +124,9 @@ export function registerLeaveTools(server: McpServer): void {
         sessionId: z.string().optional().describe(SESSION_DESC),
       },
     },
-    async ({ EmployeeID, RequestID, ChangeStateID, LeaveKey, body, sessionId }) => {
+    async ({ RequestID, ChangeStateID, LeaveKey, body, sessionId }) => {
       if (!sessionId) return authRequired();
+      const EmployeeID = await getEmployeeId(undefined, sessionId);
       const data = await updateLeave(
         "LeaveRequestSet",
         [
@@ -144,17 +146,17 @@ export function registerLeaveTools(server: McpServer): void {
   server.registerTool(
     "leave_delete_leave_request",
     {
-      description: "Delete a leave request by composite key. CSRF token is fetched automatically.",
+      description: "Delete a leave request by key (RequestID, ChangeStateID, LeaveKey). EmployeeID is determined automatically from the propagated principal. CSRF token is fetched automatically.",
       inputSchema: {
-        EmployeeID: z.string().describe("Employee personnel number"),
         RequestID: z.string().describe("Leave request ID"),
         ChangeStateID: z.string().describe("Change state ID (integer value as string)"),
         LeaveKey: z.string().describe("Leave key"),
         sessionId: z.string().optional().describe(SESSION_DESC),
       },
     },
-    async ({ EmployeeID, RequestID, ChangeStateID, LeaveKey, sessionId }) => {
+    async ({ RequestID, ChangeStateID, LeaveKey, sessionId }) => {
       if (!sessionId) return authRequired();
+      const EmployeeID = await getEmployeeId(undefined, sessionId);
       const data = await deleteLeave(
         "LeaveRequestSet",
         [
@@ -207,9 +209,8 @@ export function registerLeaveTools(server: McpServer): void {
   server.registerTool(
     "leave_get_time_account",
     {
-      description: "Get a time account by composite key. Provide dates in ISO format: 2024-01-01T00:00:00.",
+      description: "Get a time account by key. EmployeeID is determined automatically from the propagated principal. Provide dates in ISO format: 2024-01-01T00:00:00.",
       inputSchema: {
-        EmployeeID: z.string().describe("Employee personnel number"),
         ProcessingStartDate: z.string().describe("Processing period start date (ISO: 2024-01-01T00:00:00)"),
         ProcessingEndDate: z.string().describe("Processing period end date (ISO: 2024-01-01T00:00:00)"),
         TimeAccountTypeCode: z.string().describe("Time account type code"),
@@ -219,8 +220,9 @@ export function registerLeaveTools(server: McpServer): void {
         sessionId: z.string().optional().describe(SESSION_DESC),
       },
     },
-    async ({ EmployeeID, ProcessingStartDate, ProcessingEndDate, TimeAccountTypeCode, DeductionStartDate, DeductionEndDate, SeqNo, sessionId }) => {
+    async ({ ProcessingStartDate, ProcessingEndDate, TimeAccountTypeCode, DeductionStartDate, DeductionEndDate, SeqNo, sessionId }) => {
       if (!sessionId) return authRequired();
+      const EmployeeID = await getEmployeeId(undefined, sessionId);
       const data = await getLeave("TimeAccountSet", [
         { name: "EmployeeID", type: "string", value: EmployeeID },
         { name: "ProcessingStartDate", type: "datetime", value: ProcessingStartDate },
@@ -237,15 +239,17 @@ export function registerLeaveTools(server: McpServer): void {
   server.registerTool(
     "leave_create_time_account",
     {
-      description: "Create a time account record. CSRF token is fetched automatically.",
+      description: "Create a time account record. EmployeeID is determined automatically from the propagated principal and is injected into the body if omitted. CSRF token is fetched automatically.",
       inputSchema: {
-        body: z.string().describe("JSON string with time account fields"),
+        body: z.string().describe("JSON string with time account fields. EmployeeID is optional — it is filled in automatically from the principal when not provided."),
         sessionId: z.string().optional().describe(SESSION_DESC),
       },
     },
     async ({ body, sessionId }) => {
       if (!sessionId) return authRequired();
-      const data = await createLeave("TimeAccountSet", JSON.parse(body) as object, undefined, sessionId);
+      const parsed = JSON.parse(body) as Record<string, unknown>;
+      if (parsed.EmployeeID == null) parsed.EmployeeID = await getEmployeeId(undefined, sessionId);
+      const data = await createLeave("TimeAccountSet", parsed, undefined, sessionId);
       return ok(data);
     }
   );
@@ -253,9 +257,8 @@ export function registerLeaveTools(server: McpServer): void {
   server.registerTool(
     "leave_update_time_account",
     {
-      description: "Update a time account by composite key. Provide dates in ISO format: 2024-01-01T00:00:00. CSRF token is fetched automatically.",
+      description: "Update a time account by key. EmployeeID is determined automatically from the propagated principal. Provide dates in ISO format: 2024-01-01T00:00:00. CSRF token is fetched automatically.",
       inputSchema: {
-        EmployeeID: z.string().describe("Employee personnel number"),
         ProcessingStartDate: z.string().describe("Processing period start date (ISO: 2024-01-01T00:00:00)"),
         ProcessingEndDate: z.string().describe("Processing period end date (ISO: 2024-01-01T00:00:00)"),
         TimeAccountTypeCode: z.string().describe("Time account type code"),
@@ -266,8 +269,9 @@ export function registerLeaveTools(server: McpServer): void {
         sessionId: z.string().optional().describe(SESSION_DESC),
       },
     },
-    async ({ EmployeeID, ProcessingStartDate, ProcessingEndDate, TimeAccountTypeCode, DeductionStartDate, DeductionEndDate, SeqNo, body, sessionId }) => {
+    async ({ ProcessingStartDate, ProcessingEndDate, TimeAccountTypeCode, DeductionStartDate, DeductionEndDate, SeqNo, body, sessionId }) => {
       if (!sessionId) return authRequired();
+      const EmployeeID = await getEmployeeId(undefined, sessionId);
       const data = await updateLeave(
         "TimeAccountSet",
         [
@@ -290,9 +294,8 @@ export function registerLeaveTools(server: McpServer): void {
   server.registerTool(
     "leave_delete_time_account",
     {
-      description: "Delete a time account by composite key. Provide dates in ISO format: 2024-01-01T00:00:00. CSRF token is fetched automatically.",
+      description: "Delete a time account by key. EmployeeID is determined automatically from the propagated principal. Provide dates in ISO format: 2024-01-01T00:00:00. CSRF token is fetched automatically.",
       inputSchema: {
-        EmployeeID: z.string().describe("Employee personnel number"),
         ProcessingStartDate: z.string().describe("Processing period start date (ISO: 2024-01-01T00:00:00)"),
         ProcessingEndDate: z.string().describe("Processing period end date (ISO: 2024-01-01T00:00:00)"),
         TimeAccountTypeCode: z.string().describe("Time account type code"),
@@ -302,8 +305,9 @@ export function registerLeaveTools(server: McpServer): void {
         sessionId: z.string().optional().describe(SESSION_DESC),
       },
     },
-    async ({ EmployeeID, ProcessingStartDate, ProcessingEndDate, TimeAccountTypeCode, DeductionStartDate, DeductionEndDate, SeqNo, sessionId }) => {
+    async ({ ProcessingStartDate, ProcessingEndDate, TimeAccountTypeCode, DeductionStartDate, DeductionEndDate, SeqNo, sessionId }) => {
       if (!sessionId) return authRequired();
+      const EmployeeID = await getEmployeeId(undefined, sessionId);
       const data = await deleteLeave(
         "TimeAccountSet",
         [
@@ -333,15 +337,15 @@ export function registerLeaveTools(server: McpServer): void {
   server.registerTool(
     "leave_get_entitlement_info",
     {
-      description: "Get entitlement KPI summary by EmployeeNumber and AbsenceTypeCode.",
+      description: "Get entitlement KPI summary by AbsenceTypeCode. EmployeeNumber is determined automatically from the propagated principal.",
       inputSchema: {
-        EmployeeNumber: z.string().describe("Employee personnel number"),
         AbsenceTypeCode: z.string().describe("Absence type code"),
         sessionId: z.string().optional().describe(SESSION_DESC),
       },
     },
-    async ({ EmployeeNumber, AbsenceTypeCode, sessionId }) => {
+    async ({ AbsenceTypeCode, sessionId }) => {
       if (!sessionId) return authRequired();
+      const EmployeeNumber = await getEmployeeId(undefined, sessionId);
       const data = await getLeave("EntitlementInfoSet", [
         { name: "EmployeeNumber", type: "string", value: EmployeeNumber },
         { name: "AbsenceTypeCode", type: "string", value: AbsenceTypeCode },
@@ -361,16 +365,16 @@ export function registerLeaveTools(server: McpServer): void {
   server.registerTool(
     "leave_get_absence_type",
     {
-      description: "Get an absence type by EmployeeID, InfoType, and AbsenceTypeCode.",
+      description: "Get an absence type by InfoType and AbsenceTypeCode. EmployeeID is determined automatically from the propagated principal.",
       inputSchema: {
-        EmployeeID: z.string().describe("Employee personnel number"),
         InfoType: z.string().describe("Info type (e.g. '2001')"),
         AbsenceTypeCode: z.string().describe("Absence type code"),
         sessionId: z.string().optional().describe(SESSION_DESC),
       },
     },
-    async ({ EmployeeID, InfoType, AbsenceTypeCode, sessionId }) => {
+    async ({ InfoType, AbsenceTypeCode, sessionId }) => {
       if (!sessionId) return authRequired();
+      const EmployeeID = await getEmployeeId(undefined, sessionId);
       const data = await getLeave("AbsenceTypeSet", [
         { name: "EmployeeID", type: "string", value: EmployeeID },
         { name: "InfoType", type: "string", value: InfoType },
@@ -391,17 +395,17 @@ export function registerLeaveTools(server: McpServer): void {
   server.registerTool(
     "leave_get_additional_field",
     {
-      description: "Get an additional field definition by EmployeeID, InfoType, AbsenceTypeCode, and Fieldname.",
+      description: "Get an additional field definition by InfoType, AbsenceTypeCode, and Fieldname. EmployeeID is determined automatically from the propagated principal.",
       inputSchema: {
-        EmployeeID: z.string().describe("Employee personnel number"),
         InfoType: z.string().describe("Info type (e.g. '2001')"),
         AbsenceTypeCode: z.string().describe("Absence type code"),
         Fieldname: z.string().describe("Field name"),
         sessionId: z.string().optional().describe(SESSION_DESC),
       },
     },
-    async ({ EmployeeID, InfoType, AbsenceTypeCode, Fieldname, sessionId }) => {
+    async ({ InfoType, AbsenceTypeCode, Fieldname, sessionId }) => {
       if (!sessionId) return authRequired();
+      const EmployeeID = await getEmployeeId(undefined, sessionId);
       const data = await getLeave("AdditionalFieldSet", [
         { name: "EmployeeID", type: "string", value: EmployeeID },
         { name: "InfoType", type: "string", value: InfoType },
@@ -423,15 +427,15 @@ export function registerLeaveTools(server: McpServer): void {
   server.registerTool(
     "leave_get_employee_calendar",
     {
-      description: "Get employee calendar for a specific date by EmployeeNumber and StartDate (ISO: 2024-01-01T00:00:00).",
+      description: "Get employee calendar for a specific date by StartDate (ISO: 2024-01-01T00:00:00). EmployeeNumber is determined automatically from the propagated principal.",
       inputSchema: {
-        EmployeeNumber: z.string().describe("Employee personnel number"),
         StartDate: z.string().describe("Date in ISO format: 2024-01-01T00:00:00"),
         sessionId: z.string().optional().describe(SESSION_DESC),
       },
     },
-    async ({ EmployeeNumber, StartDate, sessionId }) => {
+    async ({ StartDate, sessionId }) => {
       if (!sessionId) return authRequired();
+      const EmployeeNumber = await getEmployeeId(undefined, sessionId);
       const data = await getLeave("EmployeeCalendarSet", [
         { name: "EmployeeNumber", type: "string", value: EmployeeNumber },
         { name: "StartDate", type: "datetime", value: StartDate },
@@ -451,17 +455,17 @@ export function registerLeaveTools(server: McpServer): void {
   server.registerTool(
     "leave_get_approver_default",
     {
-      description: "Get a default approver by EmployeeNumber, Infotype, AbsenceTypeCode, and Pernr.",
+      description: "Get a default approver by Infotype, AbsenceTypeCode, and Pernr. EmployeeNumber is determined automatically from the propagated principal.",
       inputSchema: {
-        EmployeeNumber: z.string().describe("Employee personnel number"),
         Infotype: z.string().describe("Info type (e.g. '2001')"),
         AbsenceTypeCode: z.string().describe("Absence type code"),
         Pernr: z.string().describe("Approver personnel number"),
         sessionId: z.string().optional().describe(SESSION_DESC),
       },
     },
-    async ({ EmployeeNumber, Infotype, AbsenceTypeCode, Pernr, sessionId }) => {
+    async ({ Infotype, AbsenceTypeCode, Pernr, sessionId }) => {
       if (!sessionId) return authRequired();
+      const EmployeeNumber = await getEmployeeId(undefined, sessionId);
       const data = await getLeave("MultipleApproverSet", [
         { name: "EmployeeNumber", type: "string", value: EmployeeNumber },
         { name: "Infotype", type: "string", value: Infotype },
@@ -483,15 +487,15 @@ export function registerLeaveTools(server: McpServer): void {
   server.registerTool(
     "leave_get_search_approver",
     {
-      description: "Get a searchable approver by EmployeeID and ApproverEmployeeID.",
+      description: "Get a searchable approver by ApproverEmployeeID. EmployeeID is determined automatically from the propagated principal.",
       inputSchema: {
-        EmployeeID: z.string().describe("Employee personnel number"),
         ApproverEmployeeID: z.string().describe("Approver employee ID"),
         sessionId: z.string().optional().describe(SESSION_DESC),
       },
     },
-    async ({ EmployeeID, ApproverEmployeeID, sessionId }) => {
+    async ({ ApproverEmployeeID, sessionId }) => {
       if (!sessionId) return authRequired();
+      const EmployeeID = await getEmployeeId(undefined, sessionId);
       const data = await getLeave("SearchApproverSet", [
         { name: "EmployeeID", type: "string", value: EmployeeID },
         { name: "ApproverEmployeeID", type: "string", value: ApproverEmployeeID },
@@ -511,17 +515,17 @@ export function registerLeaveTools(server: McpServer): void {
   server.registerTool(
     "leave_get_file_attachment",
     {
-      description: "Get file attachment metadata by EmployeeID, LeaveRequestId, FileName, and ArchivDocId.",
+      description: "Get file attachment metadata by LeaveRequestId, FileName, and ArchivDocId. EmployeeID is determined automatically from the propagated principal.",
       inputSchema: {
-        EmployeeID: z.string().describe("Employee personnel number"),
         LeaveRequestId: z.string().describe("Leave request ID"),
         FileName: z.string().describe("File name"),
         ArchivDocId: z.string().describe("Archive document ID"),
         sessionId: z.string().optional().describe(SESSION_DESC),
       },
     },
-    async ({ EmployeeID, LeaveRequestId, FileName, ArchivDocId, sessionId }) => {
+    async ({ LeaveRequestId, FileName, ArchivDocId, sessionId }) => {
       if (!sessionId) return authRequired();
+      const EmployeeID = await getEmployeeId(undefined, sessionId);
       const data = await getLeave("FileAttachmentSet", [
         { name: "EmployeeID", type: "string", value: EmployeeID },
         { name: "LeaveRequestId", type: "string", value: LeaveRequestId },
@@ -543,17 +547,15 @@ export function registerLeaveTools(server: McpServer): void {
   server.registerTool(
     "leave_get_configuration",
     {
-      description: "Get UI/system configuration for an employee by EmployeeID.",
+      description:
+        "Get UI/system configuration for the current user. The EmployeeID is determined automatically from the propagated principal — no EmployeeID input is required. The returned configuration includes the resolved EmployeeID, which the other leave tools reuse automatically.",
       inputSchema: {
-        EmployeeID: z.string().describe("Employee personnel number"),
         sessionId: z.string().optional().describe(SESSION_DESC),
       },
     },
-    async ({ EmployeeID, sessionId }) => {
+    async ({ sessionId }) => {
       if (!sessionId) return authRequired();
-      const data = await getLeave("ConfigurationSet", [
-        { name: "EmployeeID", type: "string", value: EmployeeID },
-      ], undefined, sessionId);
+      const data = await listLeave("ConfigurationSet", undefined, undefined, sessionId);
       return ok(data);
     }
   );
