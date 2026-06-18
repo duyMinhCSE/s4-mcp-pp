@@ -61,7 +61,7 @@ export async function listLeave(
   return res.data;
 }
 
-function extractEmployeeId(data: unknown): string | undefined {
+export function extractEmployeeId(data: unknown): string | undefined {
   const d = (data as { d?: unknown })?.d as
     | { results?: Array<Record<string, unknown>>; EmployeeID?: unknown; EmployeeNumber?: unknown }
     | undefined;
