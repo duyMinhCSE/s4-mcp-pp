@@ -1,5 +1,6 @@
 import express from "express";
 import { getBusinessPartner } from "./tools/businessPartner";
+import { registerLeaveTools } from "./tools/leave";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { z } from "zod";
@@ -91,6 +92,8 @@ app.post("/mcp", async (req, res) => {
       };
     }
   );
+
+  registerLeaveTools(mcpServer);
 
   await mcpServer.connect(transport);
   await transport.handleRequest(req, res, req.body);
