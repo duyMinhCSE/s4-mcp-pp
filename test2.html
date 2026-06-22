@@ -1,0 +1,127 @@
+<style>
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.gr-tbl{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px}
+.gr-tbl th{text-align:left;font-weight:500;color:var(--color-text-secondary);font-size:12px;padding:8px 10px;border-bottom:0.5px solid var(--color-border-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gr-tbl td{padding:10px;border-bottom:0.5px solid var(--color-border-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
+.gr-row:hover{background:var(--color-background-secondary);cursor:pointer}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:3px 9px;border-radius:var(--border-radius-md);font-weight:500;white-space:nowrap}
+.pill-ok{background:var(--color-background-success);color:var(--color-text-success)}
+.pill-warn{background:var(--color-background-warning);color:var(--color-text-warning)}
+.pill-err{background:var(--color-background-danger);color:var(--color-text-danger)}
+.pill-info{background:var(--color-background-info);color:var(--color-text-info)}
+.btn-emph{background:#185FA5;color:#fff;border:none;border-radius:var(--border-radius-md);padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn-emph:hover{background:#0C447C}
+.btn-sec{background:transparent;color:var(--color-text-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 14px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn-sec:hover{background:var(--color-background-secondary)}
+.icbtn{background:transparent;border:none;color:var(--color-text-secondary);cursor:pointer;padding:6px;border-radius:var(--border-radius-md);display:inline-flex}
+.icbtn:hover{background:var(--color-background-secondary)}
+</style>
+<h2 class="sr-only">Mockup of a SAP Fiori list report listing uploaded goods receipt documents with classification status, plus upload and update-status actions.</h2>
+<div style="border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-primary)">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary)">
+    <div style="display:flex;align-items:center;gap:10px">
+      <i class="ti ti-package" style="font-size:18px;color:var(--color-text-info)" aria-hidden="true"></i>
+      <span style="font-weight:500;font-size:14px">Goods receipt automation</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:4px">
+      <button class="icbtn" aria-label="Search"><i class="ti ti-search" style="font-size:18px"></i></button>
+      <button class="icbtn" aria-label="Apps"><i class="ti ti-apps" style="font-size:18px"></i></button>
+      <div style="width:28px;height:28px;border-radius:50%;background:var(--color-background-info);color:var(--color-text-info);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;margin-left:4px">MT</div>
+    </div>
+  </div>
+
+  <div style="padding:14px 16px 0">
+    <div style="font-size:18px;font-weight:500">Goods receipt documents</div>
+  </div>
+
+  <div style="display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;padding:12px 16px;border-bottom:0.5px solid var(--color-border-tertiary)">
+    <div style="display:flex;flex-direction:column;gap:3px">
+      <label style="font-size:11px;color:var(--color-text-secondary)">Status</label>
+      <select style="height:32px;font-size:13px;min-width:130px"><option>All</option><option>Ready to post</option><option>Review required</option><option>Posted</option></select>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:3px">
+      <label style="font-size:11px;color:var(--color-text-secondary)">Supplier</label>
+      <input placeholder="Any" style="height:32px;font-size:13px;width:130px"/>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:3px">
+      <label style="font-size:11px;color:var(--color-text-secondary)">PO number</label>
+      <input placeholder="e.g. 4500001234" style="height:32px;font-size:13px;width:140px"/>
+    </div>
+    <button class="btn-sec" style="height:32px;padding:6px 18px">Go</button>
+    <a style="margin-left:auto;align-self:center;font-size:12px;color:var(--color-text-info);cursor:pointer">Adapt filters</a>
+  </div>
+
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px 10px;gap:8px;flex-wrap:wrap">
+    <div style="font-size:14px;font-weight:500">Documents <span style="color:var(--color-text-secondary);font-weight:400">(6)</span></div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button class="btn-emph"><i class="ti ti-upload" style="font-size:16px" aria-hidden="true"></i>Upload new document</button>
+      <button class="btn-sec"><i class="ti ti-refresh" style="font-size:16px" aria-hidden="true"></i>Update status</button>
+      <button class="icbtn" aria-label="Sort"><i class="ti ti-arrows-sort" style="font-size:18px"></i></button>
+      <button class="icbtn" aria-label="Settings"><i class="ti ti-settings" style="font-size:18px"></i></button>
+    </div>
+  </div>
+
+  <div style="padding:0 16px 10px">
+    <table class="gr-tbl">
+      <thead><tr>
+        <th style="width:26%">Document</th>
+        <th style="width:19%">Supplier</th>
+        <th style="width:16%">PO number</th>
+        <th style="width:13%">Confidence</th>
+        <th style="width:20%">Status</th>
+        <th style="width:6%"></th>
+      </tr></thead>
+      <tbody>
+        <tr class="gr-row">
+          <td><div style="display:flex;align-items:center;gap:8px;min-width:0"><i class="ti ti-file-text" style="font-size:16px;color:var(--color-text-secondary);flex:none" aria-hidden="true"></i><div style="min-width:0"><div style="overflow:hidden;text-overflow:ellipsis">GR_DeliveryNote_8842.pdf</div><div style="font-size:11px;color:var(--color-text-tertiary)">5500000123</div></div></div></td>
+          <td>Siemens AG</td>
+          <td>4500001234</td>
+          <td style="color:var(--color-text-success)">97%</td>
+          <td><span class="pill pill-info"><i class="ti ti-clipboard-check" style="font-size:13px"></i>Ready to post</span></td>
+          <td style="text-align:right"><i class="ti ti-chevron-right" style="color:var(--color-text-tertiary)"></i></td>
+        </tr>
+        <tr class="gr-row">
+          <td><div style="display:flex;align-items:center;gap:8px;min-width:0"><i class="ti ti-file-text" style="font-size:16px;color:var(--color-text-secondary);flex:none" aria-hidden="true"></i><div style="min-width:0"><div style="overflow:hidden;text-overflow:ellipsis">packing_slip_acme.pdf</div><div style="font-size:11px;color:var(--color-text-tertiary)">5500000122</div></div></div></td>
+          <td>Acme Industrial</td>
+          <td>4500001230</td>
+          <td style="color:var(--color-text-secondary)">95%</td>
+          <td><span class="pill pill-err"><i class="ti ti-alert-triangle" style="font-size:13px"></i>Review required</span></td>
+          <td style="text-align:right"><i class="ti ti-chevron-right" style="color:var(--color-text-tertiary)"></i></td>
+        </tr>
+        <tr class="gr-row">
+          <td><div style="display:flex;align-items:center;gap:8px;min-width:0"><i class="ti ti-file-text" style="font-size:16px;color:var(--color-text-secondary);flex:none" aria-hidden="true"></i><div style="min-width:0"><div style="overflow:hidden;text-overflow:ellipsis">scan_20260620_093.pdf</div><div style="font-size:11px;color:var(--color-text-tertiary)">5500000121</div></div></div></td>
+          <td style="color:var(--color-text-tertiary)">—</td>
+          <td style="color:var(--color-text-tertiary)">—</td>
+          <td style="color:var(--color-text-tertiary)">—</td>
+          <td><span class="pill pill-warn"><i class="ti ti-loader" style="font-size:13px"></i>Extracting…</span></td>
+          <td style="text-align:right"><i class="ti ti-chevron-right" style="color:var(--color-text-tertiary)"></i></td>
+        </tr>
+        <tr class="gr-row">
+          <td><div style="display:flex;align-items:center;gap:8px;min-width:0"><i class="ti ti-file-text" style="font-size:16px;color:var(--color-text-secondary);flex:none" aria-hidden="true"></i><div style="min-width:0"><div style="overflow:hidden;text-overflow:ellipsis">GR_note_fastenal.pdf</div><div style="font-size:11px;color:var(--color-text-tertiary)">5500000120</div></div></div></td>
+          <td>Fastenal Asia</td>
+          <td>4500001225</td>
+          <td style="color:var(--color-text-success)">99%</td>
+          <td><span class="pill pill-ok"><i class="ti ti-circle-check" style="font-size:13px"></i>Posted</span></td>
+          <td style="text-align:right"><i class="ti ti-chevron-right" style="color:var(--color-text-tertiary)"></i></td>
+        </tr>
+        <tr class="gr-row">
+          <td><div style="display:flex;align-items:center;gap:8px;min-width:0"><i class="ti ti-file-text" style="font-size:16px;color:var(--color-text-secondary);flex:none" aria-hidden="true"></i><div style="min-width:0"><div style="overflow:hidden;text-overflow:ellipsis">deliverynote_3m.pdf</div><div style="font-size:11px;color:var(--color-text-tertiary)">5500000119</div></div></div></td>
+          <td>3M Singapore</td>
+          <td>4500001222</td>
+          <td style="color:var(--color-text-secondary)">91%</td>
+          <td><span class="pill pill-info"><i class="ti ti-clipboard-check" style="font-size:13px"></i>Ready to post</span></td>
+          <td style="text-align:right"><i class="ti ti-chevron-right" style="color:var(--color-text-tertiary)"></i></td>
+        </tr>
+        <tr class="gr-row">
+          <td><div style="display:flex;align-items:center;gap:8px;min-width:0"><i class="ti ti-photo" style="font-size:16px;color:var(--color-text-secondary);flex:none" aria-hidden="true"></i><div style="min-width:0"><div style="overflow:hidden;text-overflow:ellipsis">IMG_2207.jpg</div><div style="font-size:11px;color:var(--color-text-tertiary)">5500000118</div></div></div></td>
+          <td style="color:var(--color-text-tertiary)">—</td>
+          <td style="color:var(--color-text-tertiary)">—</td>
+          <td style="color:var(--color-text-tertiary)">—</td>
+          <td><span class="pill pill-warn"><i class="ti ti-loader" style="font-size:13px"></i>Classifying…</span></td>
+          <td style="text-align:right"><i class="ti ti-chevron-right" style="color:var(--color-text-tertiary)"></i></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

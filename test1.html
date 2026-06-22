@@ -1,0 +1,89 @@
+<style>
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.gr-tbl{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px}
+.gr-tbl th{text-align:left;font-weight:500;color:var(--color-text-secondary);font-size:12px;padding:8px 10px;border-bottom:0.5px solid var(--color-border-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gr-tbl td{padding:9px 10px;border-bottom:0.5px solid var(--color-border-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:3px 9px;border-radius:var(--border-radius-md);font-weight:500;white-space:nowrap}
+.pill-ok{background:var(--color-background-success);color:var(--color-text-success)}
+.btn-emph{background:#185FA5;color:#fff;border:none;border-radius:var(--border-radius-md);padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn-emph:hover{background:#0C447C}
+.btn-sec{background:transparent;color:var(--color-text-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 14px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn-sec:hover{background:var(--color-background-primary)}
+.ok{color:var(--color-text-success);font-size:12px;display:inline-flex;align-items:center;gap:4px}
+.fact-l{font-size:11px;color:var(--color-text-secondary)}
+.fact-v{font-size:14px;font-weight:500;margin-top:2px}
+</style>
+<h2 class="sr-only">Mockup of a SAP Fiori object page reviewing one goods receipt document: extracted header data compared against the S/4 purchase order, line item comparison, a consistency result, and a post goods receipt action.</h2>
+<div style="border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-primary)">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary)">
+    <div style="display:flex;align-items:center;gap:10px">
+      <i class="ti ti-package" style="font-size:18px;color:var(--color-text-info)" aria-hidden="true"></i>
+      <span style="font-weight:500;font-size:14px">Goods receipt automation</span>
+    </div>
+    <div style="width:28px;height:28px;border-radius:50%;background:var(--color-background-info);color:var(--color-text-info);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500">MT</div>
+  </div>
+
+  <div style="padding:14px 16px;border-bottom:0.5px solid var(--color-border-tertiary)">
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-text-secondary);margin-bottom:10px">
+      <i class="ti ti-chevron-left" style="font-size:15px"></i><span style="cursor:pointer">Goods receipt documents</span><span>/</span><span style="color:var(--color-text-primary)">5500000123</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+      <div>
+        <div style="font-size:18px;font-weight:500">GR_DeliveryNote_8842.pdf</div>
+        <div style="font-size:13px;color:var(--color-text-secondary);margin-top:2px">Siemens AG · delivery note DN-8842</div>
+      </div>
+      <span class="pill pill-ok" style="font-size:13px;padding:5px 11px"><i class="ti ti-circle-check" style="font-size:15px"></i>Consistent — ready to post</span>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:14px 28px;margin-top:14px">
+      <div><div class="fact-l">PO number</div><div class="fact-v">4500001234</div></div>
+      <div><div class="fact-l">Supplier</div><div class="fact-v">Siemens AG (1000234)</div></div>
+      <div><div class="fact-l">Document date</div><div class="fact-v">18 Jun 2026</div></div>
+      <div><div class="fact-l">Plant</div><div class="fact-v">1710</div></div>
+      <div><div class="fact-l">Line items</div><div class="fact-v">3</div></div>
+      <div><div class="fact-l">Confidence</div><div class="fact-v">97%</div></div>
+    </div>
+  </div>
+
+  <div style="padding:16px">
+    <div style="font-size:15px;font-weight:500;margin-bottom:12px">Header data — extracted vs purchase order</div>
+    <table class="gr-tbl">
+      <thead><tr><th style="width:24%">Field</th><th style="width:34%">Extracted (Document AI)</th><th style="width:34%">From S/4 PO</th><th style="width:8%"></th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--color-text-secondary)">PO number</td><td>4500001234</td><td>4500001234</td><td style="text-align:center"><i class="ti ti-check" style="color:var(--color-text-success)"></i></td></tr>
+        <tr><td style="color:var(--color-text-secondary)">Supplier</td><td>Siemens AG</td><td>Siemens AG (1000234)</td><td style="text-align:center"><i class="ti ti-check" style="color:var(--color-text-success)"></i></td></tr>
+        <tr><td style="color:var(--color-text-secondary)">Company code</td><td>1710</td><td>1710</td><td style="text-align:center"><i class="ti ti-check" style="color:var(--color-text-success)"></i></td></tr>
+        <tr><td style="color:var(--color-text-secondary)">Currency</td><td>EUR</td><td>EUR</td><td style="text-align:center"><i class="ti ti-check" style="color:var(--color-text-success)"></i></td></tr>
+        <tr><td style="color:var(--color-text-secondary)">Delivery note</td><td>DN-8842</td><td style="color:var(--color-text-tertiary)">not in PO</td><td style="text-align:center"><i class="ti ti-info-circle" style="color:var(--color-text-info)"></i></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="padding:16px;border-top:0.5px solid var(--color-border-tertiary)">
+    <div style="font-size:15px;font-weight:500;margin-bottom:12px">Line items</div>
+    <table class="gr-tbl">
+      <thead><tr><th style="width:8%">Item</th><th style="width:16%">Material</th><th style="width:33%">Description</th><th style="width:11%">PO qty</th><th style="width:11%">Recv. qty</th><th style="width:8%">UoM</th><th style="width:13%"></th></tr></thead>
+      <tbody>
+        <tr><td>10</td><td>MAT-1001</td><td>Industrial sensor S2-20</td><td>100</td><td>100</td><td>EA</td><td><span class="ok"><i class="ti ti-check" style="font-size:14px"></i>Match</span></td></tr>
+        <tr><td>20</td><td>MAT-1042</td><td>Control module CM-5</td><td>50</td><td>50</td><td>EA</td><td><span class="ok"><i class="ti ti-check" style="font-size:14px"></i>Match</span></td></tr>
+        <tr><td>30</td><td>MAT-2210</td><td>Cable harness, 3 m</td><td>200</td><td>200</td><td>M</td><td><span class="ok"><i class="ti ti-check" style="font-size:14px"></i>Match</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="padding:16px;border-top:0.5px solid var(--color-border-tertiary)">
+    <div style="display:flex;align-items:flex-start;gap:10px;background:var(--color-background-success);border-radius:var(--border-radius-md);padding:12px 14px">
+      <i class="ti ti-circle-check" style="font-size:18px;color:var(--color-text-success);flex:none;margin-top:1px"></i>
+      <div style="font-size:13px;color:var(--color-text-success)">
+        <div style="font-weight:500">All 3 line items match purchase order 4500001234</div>
+        <div style="margin-top:2px">Materials, quantities and supplier are consistent. Goods receipt can be posted.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:12px 16px;border-top:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);flex-wrap:wrap">
+    <button class="btn-sec"><i class="ti ti-refresh" style="font-size:16px"></i>Re-fetch PO from S/4</button>
+    <button class="btn-sec"><i class="ti ti-edit" style="font-size:16px"></i>Edit extracted data</button>
+    <button class="btn-emph"><i class="ti ti-checkbox" style="font-size:16px"></i>Post goods receipt</button>
+  </div>
+</div>
