@@ -61,6 +61,29 @@ export async function listLeave(
   return res.data;
 }
 
+export function extractEmployeeId(data: unknown): string | undefined {
+  const d = (data as { d?: unknown })?.d as
+    | { results?: Array<Record<string, unknown>>; EmployeeID?: unknown; EmployeeNumber?: unknown }
+    | undefined;
+  const rec = (d?.results?.[0] ?? d) as Record<string, unknown> | undefined;
+  const id = rec?.EmployeeID ?? rec?.EmployeeNumber;
+  return typeof id === "string" ? id : undefined;
+}
+
+/**
+ * Resolve the current user's EmployeeID from the propagated principal.
+ * The Leave service returns the logged-in employee's ConfigurationSet entry,
+ * so no EmployeeID has to be supplied by the caller.
+ */
+export async function getEmployeeId(jwt?: string, sessionId?: string): Promise<string> {
+  const data = await listLeave("ConfigurationSet", undefined, jwt, sessionId);
+  const id = extractEmployeeId(data);
+  if (!id) {
+    throw new Error("Could not determine EmployeeID from ConfigurationSet for the current principal.");
+  }
+  return id;
+}
+
 export async function getLeave(
   urlPath: string,
   keys: KeyField[],
